@@ -17,9 +17,13 @@ export class AuthController {
 		return this.authService.createUser(dto);
 	}
 
+	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
 	@Post('login')
 	async login(@Body() dto: AuthDto) {
-
+		const { login, password } = dto;
+		// Если будет exception, то он поднимется наверх из validateUser и отработает
+		const user: { email: string } = await this.authService.validateUser(login, password);
+		return this.authService.login(user.email);
 	}
 }
