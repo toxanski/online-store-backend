@@ -5,6 +5,7 @@ import { AppModule } from './../src/app.module';
 import { CreateReviewDto } from '../src/review/dto/create-review.dto';
 import { Types, disconnect } from 'mongoose';
 import { REVIEW_NOT_FOUND } from '../src/review/review.constants';
+import { AuthDto } from '../src/auth/dto/auth.dto';
 
 const productId = new Types.ObjectId().toHexString();
 const testDto: CreateReviewDto = {
@@ -15,10 +16,17 @@ const testDto: CreateReviewDto = {
 	productId
 };
 
-describe('AppController (e2e)', () => {
+describe('ReviewController (e2e)', () => {
 	let app: INestApplication;
 	// после создания, должно возвращаться _id
 	let createdId: string;
+
+	// удаление пользователя не сделал, поэтому захардкодил авторизацию
+	let loginDto: AuthDto = {
+		login: "abc@mail.ru",
+		password: "12345"
+	};
+	let token: string;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,6 +35,11 @@ describe('AppController (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
+
+		const req = await request(app.getHttpServer())
+			.post('/auth/login')
+			.send(loginDto);
+		token = req.body.access_token;
 	});
 
 	it('/review/create (POST)',async () => {
@@ -68,12 +81,14 @@ describe('AppController (e2e)', () => {
 	it('/review/delete (DELETE) -> SUCCESS', async () => {
 		return request(app.getHttpServer())
 			.delete('/review/' + createdId)
+			.set('Authorization', `Bearer ${token}`)
 			.expect(200);
 	});
 
 	it('/review/delete (DELETE) -> FAIL', async () => {
 		return request(app.getHttpServer())
 			.delete(`/review/${new Types.ObjectId().toHexString()}`)
+			.set('Authorization', `Bearer ${token}`)
 			.expect(404, {
 				statusCode: 404,
 				message: REVIEW_NOT_FOUND
