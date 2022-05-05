@@ -42,7 +42,7 @@ export class ProductModel extends TimeStamps {
 	categories: string[];
 
 	@prop({ type: () => [String] })
-	tags: string;
+	tags: string[];
 
 	@prop({type: () => [ProductCharacteristic], _id: false })
 	characteristics: [ProductCharacteristic]
