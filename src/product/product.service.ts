@@ -52,10 +52,23 @@ export class ProductService {
 				{
 					$addFields: {
 						reviewCount: {$size: '$reviews'},
-						reviewAvg: {$avg: '$reviews.rating'}
+						reviewAvg: {$avg: '$reviews.rating'},
+						// перезапись $reviews
+						reviews: {
+							// фнкция сортировки reviews(от новых к старым)
+							$function: {
+								body: `function (reviews) {
+									reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+									return reviews;
+								}`,
+								args: ['$reviews'],
+								lang: 'js'
+							}
+						}
 					}
 				}
 			])
+			// типизация у mongoose хромает(переделал из Promise<any>)
 			.exec() as unknown as (ProductModel & { review: ReviewModel[], reviewCount: number, reviewAvg: number })[]
 	}
 }
