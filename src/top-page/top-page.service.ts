@@ -53,6 +53,10 @@ export class TopPageService {
 		});
 	}
 
+	async findAll() {
+		return this.topPageModel.find({}).exec();
+	}
+
 	async deletePage(id: string) {
 		return this.topPageModel.findByIdAndRemove(id).exec();
 	}
