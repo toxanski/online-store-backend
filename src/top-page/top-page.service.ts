@@ -1,11 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { TopLevelCategory, TopPageModel } from './top-page.model';
 import { DocumentType, ModelType } from '@typegoose/typegoose/lib/types';
 import { CreateTopPageDto } from './dto/create-top-page.dto';
-import { PAGE_NOT_FOUND_ERROR } from './top-page.consts';
-import { FindTopPageDto } from './dto/find-top-page.dto';
-import { ProductModel } from '../product/product.model';
 
 @Injectable()
 export class TopPageService {
@@ -31,7 +28,14 @@ export class TopPageService {
 			.match({ firstCategory: firstCategory })
 			.group({
 				_id: { secondCategory: '$secondCategory' },
-				pages: { $push: { alias: '$alias', title: '$title' } }
+				pages: {
+					$push: {
+						alias: '$alias',
+						title: '$title',
+						category: '$category',
+						_id: '$_id'
+					}
+				}
 			})
 			// .aggregate([
 			// 	{
