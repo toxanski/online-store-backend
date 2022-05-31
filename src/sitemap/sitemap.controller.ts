@@ -7,7 +7,7 @@ import { CATEGORY_URL } from './sitemap.consts';
 
 @Controller('sitemap')
 export class SitemapController {
-	domain:string
+	domain:string;
 
 	constructor(
 		private readonly topPageService: TopPageService,

@@ -1,11 +1,26 @@
-import { BadRequestException, Body, Controller, HttpCode, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	HttpCode,
+	Post,
+	UseGuards,
+	UsePipes,
+	ValidationPipe
+} from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { ALREADY_REGISTERED_ERROR } from './auth.constants';
+import { JwtAuthGuard } from './guards/jwt.guard';
+import { CartService } from '../cart/cart.service';
+import { Types } from 'mongoose';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		private readonly cartService: CartService
+		) {}
 
 	@UsePipes(new ValidationPipe())
 	@Post('register')
@@ -14,7 +29,9 @@ export class AuthController {
 		if (oldUser) {
 			throw new BadRequestException(ALREADY_REGISTERED_ERROR); // кор. запись от HttpException
 		}
-		return this.authService.createUser(dto);
+		const user = await this.authService.createUser(dto);
+		await this.cartService.create(user._id);
+		return user;
 	}
 
 	@UsePipes(new ValidationPipe())
@@ -23,7 +40,13 @@ export class AuthController {
 	async login(@Body() dto: AuthDto) {
 		const { login, password } = dto;
 		// Если будет exception, то он поднимется наверх из validateUser и отработает
-		const user: { email: string } = await this.authService.validateUser(login, password);
-		return this.authService.login(user.email);
+		const user: { email: string, _id: Types.ObjectId } = await this.authService.validateUser(login, password);
+		return this.authService.login(user.email, user._id);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Post('addProduct')
+	async addProductToCart() {
+
 	}
 }

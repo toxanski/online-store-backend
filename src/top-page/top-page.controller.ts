@@ -20,7 +20,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @Controller('top-page')
 export class TopPageController {
-	constructor(private readonly topPageService: TopPageService) {}
+	constructor(
+		private readonly topPageService: TopPageService
+		) {}
 
 	@UseGuards(JwtAuthGuard)
 	@UsePipes(new ValidationPipe())
