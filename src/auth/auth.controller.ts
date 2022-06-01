@@ -1,8 +1,8 @@
 import {
 	BadRequestException,
 	Body,
-	Controller,
-	HttpCode,
+	Controller, Get,
+	HttpCode, Param,
 	Post,
 	UseGuards,
 	UsePipes,
@@ -14,12 +14,14 @@ import { ALREADY_REGISTERED_ERROR } from './auth.constants';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { CartService } from '../cart/cart.service';
 import { Types } from 'mongoose';
+import { UserCartService } from './user-cart/user-cart.service';
 
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private readonly authService: AuthService,
-		private readonly cartService: CartService
+		private readonly cartService: CartService,
+		private readonly userCartService: UserCartService
 		) {}
 
 	@UsePipes(new ValidationPipe())
@@ -44,9 +46,8 @@ export class AuthController {
 		return this.authService.login(user.email, user._id);
 	}
 
-	@UseGuards(JwtAuthGuard)
-	@Post('addProduct')
-	async addProductToCart() {
-
+	@Get('cart/:userId')
+	async getCartById(@Param('userId') id: string) {
+		return this.userCartService.getProductsById(id);
 	}
 }

@@ -30,7 +30,10 @@ export class CartService {
 			// 			 }
 			// )
 			// $addFields обновляет только products а не его вложенный массив
-			.updateMany({ userId }, [{$addFields: { products: [{ productId: new Types.ObjectId(productId) }] }}])
+			.update(
+				{ userId: userId },
+				{$push: { products: { productId: new Types.ObjectId(productId) } } }
+			)
 			.exec();
 	}
 

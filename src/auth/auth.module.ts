@@ -10,6 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CartModule } from '../cart/cart.module';
 import { CartService } from '../cart/cart.service';
+import { UserCartService } from './user-cart/user-cart.service';
 
 @Module({
 	controllers: [AuthController],
@@ -34,6 +35,7 @@ import { CartService } from '../cart/cart.service';
 	providers: [
 		AuthService,
 		JwtStrategy,
+		UserCartService,
 	]
 })
 export class AuthModule {}
