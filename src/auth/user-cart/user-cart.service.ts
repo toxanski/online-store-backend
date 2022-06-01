@@ -21,22 +21,23 @@ export class UserCartService {
 					as: 'cart'
 				}
 			},
-			/*{
-				// исключение
-				$project: {
-					'cart._id': 0,
-					'cart.userId': 0,
-				}
-			},*/
 			{ $unwind: '$cart' }, // flatting
 			{
 				// только нужные поля
 				$group: {
 					_id: '$_id',
+					// TODO: протестить $addToSet вместо пуша
 					cart: { $push: '$cart' },
 				}
 			},
 			{ $unwind: '$cart' }, // flatting 2
+			{
+				// исключение лишних полей
+				$project: {
+					'cart._id': 0,
+					'cart.userId': 0,
+				}
+			},
 			{
 				$addFields: {
 					// из-за массива обектов $size на cart криво работал
@@ -53,6 +54,7 @@ export class UserCartService {
 					cartCount: { $size: '$cart.products' }
 				}
 			},
+			// TODO: раскрыть ответ в виде [] из за lookup
 		]).exec();
 	}
 }

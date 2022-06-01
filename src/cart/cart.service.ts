@@ -14,25 +14,12 @@ export class CartService {
 	}
 
 	async addToCart(userId: string, productId: string) {
-		// this.cartModel
-		// .findOne({ userId: new Types.ObjectId(userId) })
-		// .insertOne()
-		console.log('userId: ', userId);
-		console.log('productId: ', productId);
-		// return this.cartModel.findOne({ userId });
+
 		return this.cartModel
-			// .updateMany(
-			// 	{ userId },
-			// 	{ $set:
-			// 				{
-			// 					products: [{ productId: new Types.ObjectId(productId) }]
-			// 				}
-			// 			 }
-			// )
-			// $addFields обновляет только products а не его вложенный массив
-			.update(
+			.updateOne(
 				{ userId: userId },
-				{$push: { products: { productId: new Types.ObjectId(productId) } } }
+				// TODO: протестить $addToSet вместо пуша
+				{ $push: { products: { productId: new Types.ObjectId(productId) } } }
 			)
 			.exec();
 	}

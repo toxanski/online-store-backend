@@ -19,7 +19,6 @@ export class CartController {
 
 	@Get('find/:userId')
 	async getCartInfo(@Param('userId') id: string) {
-		console.log(id);
 		return this.cartService.findByUserId(id);
 	}
 }

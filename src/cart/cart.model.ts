@@ -4,8 +4,8 @@ import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
 class ProductCartItem {
 	@prop()
-	// productId: Types.ObjectId;
-	productId: string;
+	productId: Types.ObjectId;
+	// productId: string;
 }
 
 export interface CartModel extends Base {}
